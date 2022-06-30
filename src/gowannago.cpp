@@ -7,7 +7,6 @@
  * Email: Lukas.beck@ditf.de
  */
 
-#include <Preferences.h>
 #include <BluetoothSerial.h>
 
 #include "Settings.h"
@@ -21,12 +20,6 @@
 #define BUTTON 39
 #define POWER_PIN 19
 
-// holds the current Mode:
-// BLE_VALUES: Sensor values over Bluetooth low energy
-// SERIAL_BT_VALUES: Sensor values over Serial bus with classic bluetooth
-// GAMEPAD: Sensor values as BLE Gamepad joystick
-Preferences preferences;
-String mode = "BLE_VALUES";
 Settings settings;
 
 BluetoothSerial SerialBT;
@@ -39,7 +32,6 @@ Output output;
 unsigned long loop_time = 0;
 int shutdown_request_time = 0;
 
-void set_mode();
 void button_action();
 void shutdown(bool directly);
 
@@ -51,15 +43,14 @@ void setup() {
   digitalWrite(POWER_PIN, HIGH);  
   
   led.setup();
+  led.show(CRGB::Green);
   matrix.setup();
 
-  preferences.begin("app", false);
-
-  set_mode();
-  if (mode == "BLE_VALUES"){
+  settings.setup();
+  if (settings.mode == "BLE_VALUES"){
     led.std_color = CRGB::Blue;
     ble.setup("BLE_GoWannaGo");
-  } else if (mode == "SERIAL_BT_VALUES"){
+  } else if (settings.mode == "SERIAL_BT_VALUES"){
     led.std_color = CRGB::Purple;
     SerialBT.begin("Serial_GoWannaGo");
   } else {
@@ -67,10 +58,7 @@ void setup() {
     gamepad.setup();
   }
   led.show(led.std_color);
-  
-  settings.setup();
-
-  delay(2000);
+  Serial.println("Controller Setup complete");
 }
 
 
@@ -90,10 +78,10 @@ void loop() {
 
   Serial.println(output.format_values);
   // Send data
-  if (mode == "BLE_VALUES"){
+  if (settings.mode == "BLE_VALUES"){
     ble.sent_data_raw(output.array_values);
     ble.sent_time((uint32_t) output.run_time);
-  } else if (mode == "SERIAL_BT_VALUES"){
+  } else if (settings.mode == "SERIAL_BT_VALUES"){
     SerialBT.println(output.format_values);
   } else {
     gamepad.update(output.array_values);
@@ -115,13 +103,6 @@ void loop() {
 ///////////////////////////////////////////////////////////////////////
 // Methods
 
-// set mode to value in preferences
-void set_mode(){
-  mode = preferences.getString("mode", "BLE_VALUES");
-  Serial.print("Mode: ");
-  Serial.println(mode);
-}
-
 // controls what happens if the BUTTON is pressed
 void button_action(){
   Serial.println("activated");
@@ -140,18 +121,17 @@ void button_action(){
   }
 
   // change mode
-  if (mode == "BLE_VALUES"){
-    preferences.putString("mode", "SERIAL_BT_VALUES");
+  if (settings.mode == "BLE_VALUES"){
+    settings.save_mode("SERIAL_BT_VALUES");
     led.std_color = CRGB::Purple;
-  } else if (mode == "SERIAL_BT_VALUES"){
-    preferences.putString("mode", "GAMEPAD");
+  } else if (settings.mode == "SERIAL_BT_VALUES"){
+    settings.save_mode("GAMEPAD");
     led.std_color = CRGB::Yellow;
   } else {
-    preferences.putString("mode", "BLE_VALUES");
+    settings.save_mode("BLE_VALUES");
     led.std_color = CRGB::Blue;
   } 
-  
-  set_mode();
+
   led.show(led.std_color);
   delay(1000);
   ESP.restart();
