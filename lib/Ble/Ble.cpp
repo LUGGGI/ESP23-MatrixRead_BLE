@@ -24,9 +24,9 @@ class MyServerCallbacks: public BLEServerCallbacks {
     }
 };
 
-void Ble::setup(std::string name){
+void Ble::setup(String name){
   // Create the BLE Device
-  BLEDevice::init(name);
+  BLEDevice::init(name.c_str());
 
   // Create the BLE Server
   pServer = BLEDevice::createServer();
@@ -60,7 +60,7 @@ void Ble::setup(std::string name){
 }
 
 // send strings over BLE
-void Ble::sent_data(std::string data){
+void Ble::sent_data(String data){
   if (deviceConnected) {      
     pVal->setValue(data.c_str());
     pVal->notify();

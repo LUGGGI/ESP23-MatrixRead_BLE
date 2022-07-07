@@ -12,16 +12,15 @@
 
 #include <stdint.h>
 #include <Arduino.h>
-#include <string>
 
 class Ble{
   public:
 
   // Use this to setup BLE
-  void setup(std::string name);
+  void setup(String name);
 
   // This will send Data given as a string
-  void sent_data(std::string data);
+  void sent_data(String data);
 
   // This will send data/ the time given as an (uint32_t) integer
   void sent_time(uint32_t data);
