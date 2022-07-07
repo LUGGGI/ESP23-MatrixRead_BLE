@@ -8,12 +8,9 @@
  */
 #include <Arduino.h>
 
-#define DPIN_GREEN 22
-#define DPIN_YELLOW 21
-#define DPIN_GREY 25
-
 #define APIN_ORANGE 33
 #define APIN_BROWN 34
+const int DPINS[] = {22, 21, 25};
 
 // Class to output the read Variables, it saves the Values as a String, and in an array, it also saves the program run time.
 class Output{

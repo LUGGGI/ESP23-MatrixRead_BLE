@@ -8,10 +8,12 @@ void MatrixRead::setup(int shutdown_time, int shutdown_threshold, int buf_len){
   BUF_LEN = buf_len;
   pinMode(APIN_ORANGE, INPUT);
   pinMode(APIN_BROWN, INPUT);
-  pinMode(DPIN_GREY, OUTPUT);
-  pinMode(DPIN_YELLOW, OUTPUT);
-  pinMode(DPIN_GREEN, OUTPUT);
+
+  for (int i=0; i<3; ++i){
+    pinMode(DPINS[i], INPUT);
+  }
 }
+
 void MatrixRead::read(short row, short col){
   if (col == 0){
     x[row][col] += analogRead(APIN_BROWN);
@@ -21,6 +23,7 @@ void MatrixRead::read(short row, short col){
   }
   else exit(0);
 }
+
 void MatrixRead::get_values(void){
   out.run_time = millis();
 
@@ -30,36 +33,17 @@ void MatrixRead::get_values(void){
       x[i][j] = 0;
     }
   }
-  
-  pinMode(DPIN_GREY, OUTPUT);
-  digitalWrite(DPIN_GREY, HIGH);
-  delay(4);
-  for(int i=0; i<BUF_LEN; ++i){
-    read(0, 0);
-    read(0, 1);
+  for (int i=0; i<3; ++i){
+    pinMode(DPINS[i], OUTPUT);
+    digitalWrite(DPINS[i], HIGH);
+    delay(4);
+    for(int i=0; i<BUF_LEN; ++i){
+      read(0, 0);
+      read(0, 1);
+    }
+    digitalWrite(DPINS[i], LOW);
+    pinMode(DPINS[i], INPUT);
   }
-  digitalWrite(DPIN_GREY, LOW);
-  pinMode(DPIN_GREY, INPUT);
-  
-  pinMode(DPIN_YELLOW, OUTPUT);
-  digitalWrite(DPIN_YELLOW, HIGH);
-  delay(4);
-  for(int i=0; i<BUF_LEN; ++i){
-    read(1, 0);
-    read(1, 1);
-  }
-  digitalWrite(DPIN_YELLOW, LOW);
-  pinMode(DPIN_YELLOW, INPUT);
-
-  pinMode(DPIN_GREEN, OUTPUT);
-  digitalWrite(DPIN_GREEN, HIGH);
-  delay(4);
-  for(int i=0; i<BUF_LEN; ++i){
-    read(2, 0);
-    read(2, 1);
-  }
-  digitalWrite(DPIN_GREEN, LOW);
-  pinMode(DPIN_GREEN, INPUT);
 }
 
 Output MatrixRead::get_output(void){
@@ -102,10 +86,9 @@ Output MatrixRead::get_output(void){
     }
   }
   // Allows for a nicer display in Arduino IDE plotter
-  out.format_values += " 0 4096";
+  out.format_values += " 0 4096  ";
 
   // Seconds until shutdown resets if activity is detected
-  out.format_values += "  ";
   out.format_values += (last_activity_time + SHUTDOWN_TIME - millis()) / 1000;
 
   return out;
