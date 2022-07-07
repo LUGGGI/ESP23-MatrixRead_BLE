@@ -18,7 +18,7 @@ class Gamepad{
   public:
 
   // setup gamepad
-  void setup();
+  void setup(String name);
 
   // update with new sensor values
   void update(uint16_t array_values[6]);

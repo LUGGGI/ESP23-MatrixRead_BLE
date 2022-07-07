@@ -16,7 +16,6 @@
 #include "Gamepad.h"
 
 
-#define SEND_FREQ 50 // send frequency in ms
 #define BUTTON 39
 #define POWER_PIN 19
 
@@ -29,6 +28,7 @@ Ble ble;
 Gamepad gamepad;
 Output output;	
 
+int SEND_FREQ; // send frequency in ms
 unsigned long loop_time = 0;
 int shutdown_request_time = 0;
 
@@ -44,18 +44,24 @@ void setup() {
   
   led.setup();
   led.show(CRGB::Green);
-  matrix.setup();
 
   settings.setup();
+  SEND_FREQ = settings.send_freq;
+
+  matrix.setup(settings.shutdown_time, settings.shutdown_threshold, settings.buf_len);
+
   if (settings.mode == "BLE_VALUES"){
     led.std_color = CRGB::Blue;
-    ble.setup("BLE_GoWannaGo");
+    String name = String(settings.id) + "_BLE_GoWannaGo";
+    ble.setup(name.c_str());
   } else if (settings.mode == "SERIAL_BT_VALUES"){
     led.std_color = CRGB::Purple;
-    SerialBT.begin("Serial_GoWannaGo");
+    String name = String(settings.id) + "_Serial_GoWannaGo";
+    SerialBT.begin(name);
   } else {
     led.std_color = CRGB::Yellow;
-    gamepad.setup();
+    String name = String(settings.id) + "_BLE_Gamepad";
+    gamepad.setup(name);
   }
   led.show(led.std_color);
   Serial.println("Controller Setup complete");

@@ -1,7 +1,8 @@
 #include "Gamepad.h"
 #include "math.h"
 
-void Gamepad::setup(){
+void Gamepad::setup(String name){
+  gamepad = BleGamepad(name.c_str(), "DITF", 100);
   gamepad.begin();
 }
 

@@ -2,7 +2,10 @@
 
 #include <math.h>
 
-void MatrixRead::setup(void){
+void MatrixRead::setup(int shutdown_time, int shutdown_threshold, int buf_len){
+  SHUTDOWN_TIME = shutdown_time * 1000;
+  SHUTDOWN_THRESHOLD = shutdown_threshold;
+  BUF_LEN = buf_len;
   pinMode(APIN_ORANGE, INPUT);
   pinMode(APIN_BROWN, INPUT);
   pinMode(DPIN_GREY, OUTPUT);
@@ -83,33 +86,23 @@ Output MatrixRead::get_output(void){
     return out;
   }
 
-
   // csv output
   out.csv_values = "";
   for(int i=0; i<3; ++i){
     for(int j=0; j<2; ++j){ 
-      out.csv_values += x[i][j];
-      out.csv_values += ", ";
+      out.csv_values += String(x[i][j]) + ", ";
     }
   }
 
-  // formated output
+  // formatted output
   out.format_values = ""; //resets the output string
   for(int i=0; i<3; ++i){
     for(int j=0; j<2; ++j){
-      out.format_values += " "; //" " + (i+1) + "-" + (j+1) + ":"
-      out.format_values += i+1;
-      out.format_values += "-";
-      out.format_values += j+1;
-      out.format_values += ":";
-      out.format_values += x[i][j];
+      out.format_values += " " + String(i+1) + "-" + String(j+1) + ":" + String(x[i][j]);
     }
   }
-  // Allows for a nicer display in arduio IDE plotter
-  out.format_values += " ";
-  out.format_values += 0;
-  out.format_values += " ";
-  out.format_values += 4096;
+  // Allows for a nicer display in Arduino IDE plotter
+  out.format_values += " 0 4096";
 
   // Seconds until shutdown resets if activity is detected
   out.format_values += "  ";
