@@ -37,7 +37,8 @@ void shutdown(bool directly);
 
 void setup() {
   Serial.begin(115200);
-
+  // cpu frequency to 80 mHz (set to 160 or 240 if send frequency cant be met)
+  setCpuFrequencyMhz(80);
   pinMode(BUTTON, INPUT_PULLUP);
   pinMode(POWER_PIN, OUTPUT);
   digitalWrite(POWER_PIN, HIGH);  
