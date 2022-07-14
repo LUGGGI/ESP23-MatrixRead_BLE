@@ -12,6 +12,7 @@ void Settings::preference_setup(){
   print_settings();
 }
 
+
 void Settings::setup() {
   Serial.println("Setting up controller... ");
   preference_setup();
@@ -37,42 +38,22 @@ void Settings::setup() {
     Serial.println(input);
     
     if (input =="ID") {
-        Serial.print("Setting ID, please enter value to set id to: ");
-        while (Serial.available() == 0) {delay(1);} // wait for input
-        id = Serial.readString().toInt();
-        Serial.println(id);
-        preferences.putInt("ID", id);
+        id = change_setting(input);
 
     } else if (input =="SEND_FREQ"){
-        Serial.print("Setting SEND_FREQ in ms, please enter value to set id to: ");
-        while (Serial.available() == 0) {delay(1);} // wait for input
-        send_freq = Serial.readString().toInt();
-        Serial.println(send_freq);
-        preferences.putInt("AUTO_SHUTDOWN_TIME", send_freq);
+        send_freq = change_setting(input, " in ms");
 
     } else if (input =="SHUTDOWN_TIME"){
-        Serial.print("Setting SHUTDOWN_TIME in s, please enter value to set id to: ");
-        while (Serial.available() == 0) {delay(1);} // wait for input
-        shutdown_time = Serial.readString().toInt();
-        Serial.println(shutdown_time);
-        preferences.putInt("SHUTDOWN_TIME", shutdown_time);
+        shutdown_time = change_setting(input, " in s");
 
     } else if (input =="SHUTDOWN_THRESHOLD"){
-        Serial.print("Setting SHUTDOWN_THRESHOLD, please enter value to set id to: ");
-        while (Serial.available() == 0) {delay(1);} // wait for input
-        shutdown_threshold = Serial.readString().toInt();
-        Serial.println(shutdown_threshold);
-        preferences.putInt("SHUTDOWN_THRESHOLD", shutdown_threshold);
+        shutdown_threshold = change_setting(input, " between 0 and 4096");
 
     } else if (input =="BUF_LEN"){
-        Serial.print("Setting BUF_LEN, please enter value to set id to: ");
-        while (Serial.available() == 0) {delay(1);} // wait for input
-        buf_len = Serial.readString().toInt();
-        Serial.println(buf_len);
-        preferences.putInt("BUF_LEN", buf_len);
+        buf_len = change_setting(input);
 
     } else if (input == "EXIT" ) {
-        Serial.println("Exiting Settings");
+        Serial.println("Exiting Settings...");
         set_settings = false;
     } else {
       Serial.println("Entered setting not found please try again.");
@@ -80,9 +61,28 @@ void Settings::setup() {
   }
 }
 
-void Settings::print_settings(){
-  Serial.println("Controller Settings: \n Data Rate: 115200 \n Mode:      " + String(mode) + "\n ID: " + String(id) + "\n SEND_FREQ: " + String(send_freq) + "\n SHUTDOWN_TIME: " + String(shutdown_time) + "\n SHUTDOWN_THRESHOLD: " + String(shutdown_threshold));
+
+int Settings::change_setting(String input, String unit){
+  Serial.print("Setting " + input + unit +", please enter new value: ");
+  while (Serial.available() == 0) {delay(1);} // wait for input
+  int value = Serial.readString().toInt();
+  Serial.println(value);
+  preferences.putInt(input.c_str(), value);
+  return value;
 }
+
+
+void Settings::print_settings(){
+  Serial.println("Controller Settings: "
+    "\n Data Rate:          " + String(115200) + 
+    "\n Mode:               " + String(mode) + 
+    "\n ID:                 " + String(id) + 
+    "\n SEND_FREQ:          " + String(send_freq) + 
+    "\n SHUTDOWN_TIME:      " + String(shutdown_time) + 
+    "\n SHUTDOWN_THRESHOLD: " + String(shutdown_threshold)
+  );
+}
+
 
 void Settings::save_mode(String mode_){
   preferences.putString("mode", mode_);

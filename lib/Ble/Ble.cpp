@@ -3,11 +3,6 @@
 #include <NimBLEDevice.h>
 
 
-#define SERVICE_UUID  "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define VAL_UUID      "7a7b95b1-4423-4e36-aaf4-d3698f06e38d"
-#define PRESSED_UUID  "940353f3-7264-40db-8d3c-8fddfeb8828d"
-#define TIME_UUID     "0e5f194e-8bf3-4f68-8203-33f2ed28c49a"
-
 BLEServer* pServer = NULL;
 BLECharacteristic* pVal = NULL;
 BLECharacteristic* pTime = NULL;
@@ -23,6 +18,7 @@ class MyServerCallbacks: public BLEServerCallbacks {
       deviceConnected = false;
     }
 };
+
 
 void Ble::setup(String name){
   // Create the BLE Device
@@ -59,7 +55,7 @@ void Ble::setup(String name){
   Serial.println("Waiting a client connection to notify...");
 }
 
-// send strings over BLE
+
 void Ble::sent_data(String data){
   if (deviceConnected) {      
     pVal->setValue(data.c_str());
@@ -67,6 +63,7 @@ void Ble::sent_data(String data){
   }
   else connection_event();
 }
+
 
 void Ble::sent_data_raw(uint16_t* arr){
   if (deviceConnected) {  
@@ -81,7 +78,8 @@ void Ble::sent_data_raw(uint16_t* arr){
   }
   else connection_event();
 }
-// sent 32bit int over BLE
+
+
 void Ble::sent_time(uint32_t data){
   if (deviceConnected) {      
     pTime->setValue(data);
@@ -89,7 +87,9 @@ void Ble::sent_time(uint32_t data){
   }
   else connection_event();
 }
-// is called when there is no connection to host
+
+
+
 void Ble::connection_event(void){
   // disconnecting
   if (!deviceConnected && oldDeviceConnected) {

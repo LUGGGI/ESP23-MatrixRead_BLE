@@ -1,28 +1,29 @@
 #include "MatrixRead.h"
 
-#include <math.h>
 
 void MatrixRead::setup(int shutdown_time, int shutdown_threshold, int buf_len){
   SHUTDOWN_TIME = shutdown_time * 1000;
   SHUTDOWN_THRESHOLD = shutdown_threshold;
   BUF_LEN = buf_len;
-  pinMode(APIN_ORANGE, INPUT);
-  pinMode(APIN_BROWN, INPUT);
+  pinMode(A_PIN_ORANGE, INPUT);
+  pinMode(A_PIN_BROWN, INPUT);
 
   for (int i=0; i<3; ++i){
-    pinMode(DPINS[i], INPUT);
+    pinMode(D_PINS[i], INPUT);
   }
 }
+
 
 void MatrixRead::read(short row, short col){
   if (col == 0){
-    x[row][col] += analogRead(APIN_BROWN);
+    x[row][col] += analogRead(A_PIN_BROWN);
   }
   else if (col ==1){
-    x[row][col] += analogRead(APIN_ORANGE);
+    x[row][col] += analogRead(A_PIN_ORANGE);
   }
   else exit(0);
 }
+
 
 void MatrixRead::get_values(void){
   out.run_time = millis();
@@ -34,17 +35,18 @@ void MatrixRead::get_values(void){
     }
   }
   for (int i=0; i<3; ++i){
-    pinMode(DPINS[i], OUTPUT);
-    digitalWrite(DPINS[i], HIGH);
+    pinMode(D_PINS[i], OUTPUT);
+    digitalWrite(D_PINS[i], HIGH);
     delay(4);
     for(int i=0; i<BUF_LEN; ++i){
       read(0, 0);
       read(0, 1);
     }
-    digitalWrite(DPINS[i], LOW);
-    pinMode(DPINS[i], INPUT);
+    digitalWrite(D_PINS[i], LOW);
+    pinMode(D_PINS[i], INPUT);
   }
 }
+
 
 Output MatrixRead::get_output(void){
   bool over_threshold = false;
@@ -53,6 +55,7 @@ Output MatrixRead::get_output(void){
     for(int j=0; j<2; ++j){
       x[i][j] = (uint16_t) lround(x[i][j] / BUF_LEN);
       
+      // check if activity is detected (values leave the SHUTDOWN_THRESHOLD range)
       if (abs(x[i][j] - last_activity_value[i][j]) > SHUTDOWN_THRESHOLD){
         last_activity_value[i][j] = x[i][j];
         over_threshold = true;
@@ -61,11 +64,11 @@ Output MatrixRead::get_output(void){
     }
   }
 
+  // requests for shutdown if SHUTDOWN_TIME is exceeded
   if (over_threshold){
     last_activity_time = millis();
     shutdown_requested = false;
-  }
-  if (millis() > (last_activity_time + SHUTDOWN_TIME)) {
+  } else if (millis() > (last_activity_time + SHUTDOWN_TIME)) {
     shutdown_requested = true;
     return out;
   }

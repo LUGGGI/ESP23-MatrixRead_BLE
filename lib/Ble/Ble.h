@@ -1,5 +1,5 @@
 /* Ble.h
- * 23.06.2022
+ * 14.07.2022
  * 
  * Class for using BT Low Energy on the ESP32
  * 
@@ -7,11 +7,15 @@
  * Email: Lukas.beck@ditf.de
  */
 
-#ifndef BLE_H_
-#define BLE_H_
+#ifndef BLE_H
+#define BLE_H
 
-#include <stdint.h>
 #include <Arduino.h>
+
+#define SERVICE_UUID  "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
+#define VAL_UUID      "7a7b95b1-4423-4e36-aaf4-d3698f06e38d"
+#define TIME_UUID     "0e5f194e-8bf3-4f68-8203-33f2ed28c49a"
+
 
 class Ble{
   public:
@@ -34,4 +38,4 @@ class Ble{
 
 };
 
-#endif /* BLE_H_ */
+#endif /* BLE_H */

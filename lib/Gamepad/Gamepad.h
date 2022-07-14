@@ -1,15 +1,16 @@
 /* Gamepad.h
- * 23.06.2022
+ * 14.07.2022
  * 
  * Allows the controller to function as a ble gamepad
  * 
  * Author: Lukas Beck
  * Email: Lukas.beck@ditf.de
  */
+#ifndef GAMEPAD_H
+#define GAMEPAD_H
 
-#include <BleGamepad.h>
 #include <Arduino.h>
-#include <stdint.h>
+#include <BleGamepad.h>
 
 
 class Gamepad{
@@ -23,3 +24,5 @@ class Gamepad{
   // update with new sensor values
   void update(uint16_t array_values[6]);
 };
+
+#endif /* GAMEPAD_H */

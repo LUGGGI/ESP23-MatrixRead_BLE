@@ -1,16 +1,19 @@
 /* MatrixRead.h
- * 23.06.2022
+ * 14.07.2022 
  * 
  * Reading the values from the input-pins and returning the values
  * 
  * Author: Lukas Beck
  * Email: Lukas.beck@ditf.de
  */
+#ifndef MATRIX_READ_H
+#define MATRIX_READ_H
+
 #include <Arduino.h>
 
-#define APIN_ORANGE 33
-#define APIN_BROWN 34
-const int DPINS[] = {22, 21, 25};
+#define A_PIN_ORANGE 33
+#define A_PIN_BROWN 34
+const int D_PINS[] = {22, 21, 25};
 
 // Class to output the read Variables, it saves the Values as a String, and in an array, it also saves the program run time.
 class Output{
@@ -60,3 +63,5 @@ class MatrixRead{
   // this will return the Output class
   Output get_output(void);
 };
+
+#endif /* MATRIX_READ_H */
