@@ -51,6 +51,8 @@ void setup() {
 
   matrix.setup(settings.shutdown_time, settings.shutdown_threshold, settings.buf_len);
 
+  settings.mode == "_BLE_Gamepad";
+
   if (settings.mode == "BLE_VALUES"){
     led.std_color = CRGB::Blue;
     String name = String(settings.id) + "_BLE_GoWannaGo";
