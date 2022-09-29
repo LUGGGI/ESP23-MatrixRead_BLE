@@ -29,7 +29,6 @@ class Settings {
   int shutdown_time = 300; // time after the controller turns of in s
   int shutdown_threshold = 400; // read range that has to be exceeded so that the automatic shutdown time resets
   int buf_len = 10; // length of buffer (more increases time for reading sensor)
-
   // holds the current Mode:
   // BLE_VALUES: Sensor values over Bluetooth low energy
   // SERIAL_BT_VALUES: Sensor values over Serial bus with classic bluetooth

@@ -23,7 +23,7 @@ class Output{
   // holds output with row and column an with bounds for better scaling in Arduino Serial Monitor
   String format_values;
   // holds output as an array
-  uint16_t array_values[6];
+  uint16_t output_array[6];
 
   unsigned long run_time = 0;
 };
@@ -32,11 +32,11 @@ class Output{
 class MatrixRead{
   
   private:
-  int BUF_LEN = 10.0;
+  int BUF_LEN;
   int SHUTDOWN_THRESHOLD;
   int SHUTDOWN_TIME;
 
-  uint16_t x[3][2];
+  uint32_t buffer[3][2];
   unsigned int last_activity_time = 0;
   uint16_t last_activity_value[3][2];
 
@@ -45,13 +45,13 @@ class MatrixRead{
   bool shutdown_requested = false;
 
   MatrixRead(){
-    x[3][2] = 0;
+    buffer[3][2] = 0;
   }
   // this will set all the pins in the right mode
   void setup(int shutdown_time, int shutdown_threshold, int buf_len);
   
   // this will read the value from the given row and column
-  // the result is written into the x[][] array.
+  // the result is written into the buffer[][] array.
   // if the value is below the THRESHOLD this will write 0
   // else this will scale the value with the SCALER
   void read(short row, short col);

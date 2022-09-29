@@ -88,12 +88,12 @@ void loop() {
   Serial.println(output.format_values);
   // Send data
   if (settings.mode == "BLE_VALUES"){
-    ble.sent_data_raw(output.array_values);
+    ble.sent_data_raw(output.output_array);
     ble.sent_time((uint32_t) output.run_time);
   } else if (settings.mode == "SERIAL_BT_VALUES"){
     SerialBT.println(output.format_values);
   } else {
-    gamepad.update(output.array_values);
+    gamepad.update(output.output_array);
   }
 
   // check frequency
