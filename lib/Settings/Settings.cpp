@@ -4,11 +4,12 @@
 void Settings::preference_setup(){
   preferences.begin("app", false);
 
-  id = preferences.getInt("ID", 0);
-  send_freq = preferences.getInt("SEND_FREQ", 50);
-  shutdown_time = preferences.getInt("SHUTDOWN_TIME", 300);
-  shutdown_threshold = preferences.getInt("SHUTDOWN_THRESHOLD", 400);
-  mode = preferences.getString("mode", "BLE_VALUES");
+  id = preferences.getInt("ID", id);
+  send_freq = preferences.getInt("SEND_FREQ", send_freq);
+  shutdown_time = preferences.getInt("SHUTDOWN_TIME", shutdown_time);
+  shutdown_threshold = preferences.getInt("SHUTDOWN_THRESHOLD", shutdown_threshold);
+  buf_len = preferences.getInt("BUF_LEN", buf_len);
+  mode = preferences.getString("mode", mode);
   print_settings();
 }
 
@@ -79,7 +80,8 @@ void Settings::print_settings(){
     "\n ID:                 " + String(id) + 
     "\n SEND_FREQ:          " + String(send_freq) + 
     "\n SHUTDOWN_TIME:      " + String(shutdown_time) + 
-    "\n SHUTDOWN_THRESHOLD: " + String(shutdown_threshold)
+    "\n SHUTDOWN_THRESHOLD: " + String(shutdown_threshold) +
+    "\n BUF_LEN: " + String(buf_len)
   );
 }
 
