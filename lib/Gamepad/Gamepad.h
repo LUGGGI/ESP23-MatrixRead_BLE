@@ -17,6 +17,8 @@ class Gamepad{
   private:
   BleGamepad gamepad;
 
+  String SensorMode = "Mat"; //"Ribbon"
+
   char A = BUTTON_1;
   char B = BUTTON_2;
   char X = BUTTON_3;
@@ -41,7 +43,8 @@ class Gamepad{
   int16_t JoyR_Y = 0;
 
   uint16_t minVal[6] = {0};
-  uint16_t topVal = 3900;
+  uint16_t topValM = 3900;
+  uint16_t topValR = 2800;
 
   unsigned long jump_start_time = 0;
 
@@ -49,7 +52,7 @@ class Gamepad{
   public:
 
   // setup gamepad
-  void setup(String name, uint16_t output_array[6]);
+  void setup(String name, String sensor_mode, uint16_t output_array[6]);
 
   // update with new sensor values
   void update(uint16_t array_values[6]);

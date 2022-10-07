@@ -9,6 +9,7 @@ void Settings::preference_setup(){
   shutdown_time = preferences.getInt("SHUTDOWN_TIME", shutdown_time);
   shutdown_threshold = preferences.getInt("SHUTDOWN_THRESHOLD", shutdown_threshold);
   buf_len = preferences.getInt("BUF_LEN", buf_len);
+  sensor_mode = preferences.getString("SENSOR_MODE", sensor_mode);
   mode = preferences.getString("mode", mode);
   print_settings();
 }
@@ -38,22 +39,32 @@ void Settings::setup() {
     String input = Serial.readString();
     Serial.println(input);
     
-    if (input =="ID") {
+    if (input.equalsIgnoreCase("ID")) {
         id = change_setting(input);
 
-    } else if (input =="SEND_FREQ"){
+    } else if (input.equalsIgnoreCase("SEND_FREQ")){
         send_freq = change_setting(input, " in ms");
 
-    } else if (input =="SHUTDOWN_TIME"){
+    } else if (input.equalsIgnoreCase("SHUTDOWN_TIME")){
         shutdown_time = change_setting(input, " in s");
 
-    } else if (input =="SHUTDOWN_THRESHOLD"){
+    } else if (input.equalsIgnoreCase("SHUTDOWN_THRESHOLD")){
         shutdown_threshold = change_setting(input, " between 0 and 4096");
 
-    } else if (input =="BUF_LEN"){
+    } else if (input.equalsIgnoreCase("BUF_LEN")){
         buf_len = change_setting(input);
 
-    } else if (input == "EXIT" ) {
+    } else if (input.equalsIgnoreCase("SENSOR_MODE")){
+        Serial.print("Setting SENSOR_Mode, please enter new mode: Mat or Ribbon ");
+        while (Serial.available() == 0) {delay(1);} // wait for input
+        String value = Serial.readString();
+        Serial.println(value);
+        if (value == "Mat" || "Ribbon") {
+          preferences.putString(input.c_str(), value);
+          sensor_mode = value;
+        } else Serial.println("Not correct try again");
+
+    } else if (input.equalsIgnoreCase("EXIT")) {
         Serial.println("Exiting Settings...");
         set_settings = false;
     } else {
@@ -81,7 +92,8 @@ void Settings::print_settings(){
     "\n SEND_FREQ:          " + String(send_freq) + 
     "\n SHUTDOWN_TIME:      " + String(shutdown_time) + 
     "\n SHUTDOWN_THRESHOLD: " + String(shutdown_threshold) +
-    "\n BUF_LEN: " + String(buf_len)
+    "\n BUF_LEN: " + String(buf_len) +
+    "\n SENSOR_MODE: " + String(sensor_mode)
   );
 }
 
