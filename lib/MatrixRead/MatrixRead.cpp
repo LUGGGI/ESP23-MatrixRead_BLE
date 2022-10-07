@@ -63,7 +63,6 @@ Output MatrixRead::get_output(void){
       }
     }
   }
-  Serial.println();
 
   // requests for shutdown if SHUTDOWN_TIME is exceeded
   if (over_threshold){
@@ -86,7 +85,9 @@ Output MatrixRead::get_output(void){
   out.format_values = ""; //resets the output string
   for(int i=0; i<3; ++i){
     for(int j=0; j<2; ++j){
-      out.format_values += " " + String(i+1) + "-" + String(j+1) + ":" + String(buffer[i][j]);
+      char value[5];
+      sprintf(value, "%4u", buffer[i][j]);
+      out.format_values += " " + String(i+1) + "-" + String(j+1) + ":" + String(value);
     }
   }
   // Allows for a nicer display in Arduino IDE plotter

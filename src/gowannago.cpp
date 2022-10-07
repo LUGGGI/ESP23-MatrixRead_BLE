@@ -50,6 +50,8 @@ void setup() {
   SEND_FREQ = settings.send_freq;
 
   matrix.setup(settings.shutdown_time, settings.shutdown_threshold, settings.buf_len);
+  matrix.get_values();
+  output = matrix.get_output();
 
   settings.mode == "_BLE_Gamepad";
 
@@ -64,7 +66,7 @@ void setup() {
   } else {
     led.std_color = CRGB::Yellow;
     String name = String(settings.id) + "_BLE_Gamepad";
-    gamepad.setup(name);
+    gamepad.setup(name, output.output_array);
   }
   led.show(led.std_color);
   Serial.println("Controller Setup complete");
@@ -85,7 +87,7 @@ void loop() {
   matrix.get_values();
   output = matrix.get_output();
 
-  Serial.println(output.format_values);
+  Serial.print(output.format_values);
   // Send data
   if (settings.mode == "BLE_VALUES"){
     ble.sent_data_raw(output.output_array);
@@ -97,15 +99,16 @@ void loop() {
   }
 
   // check frequency
-  if (millis() > (loop_time + SEND_FREQ)) {
-    Serial.print("Error SEND_FREQUENCY to low");
-    led.error();
-  }
+  // if (millis() > (loop_time + SEND_FREQ)) {
+  //   Serial.print("Error SEND_FREQUENCY to low");
+  //   led.error();
+  // }
   led.blink();
   // wait for next send freq
   while((millis() < (loop_time + SEND_FREQ)) && digitalRead(BUTTON)){
     delay(1);
   }
+  Serial.println();
 }
 
 

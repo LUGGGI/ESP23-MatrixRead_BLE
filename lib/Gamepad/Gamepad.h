@@ -12,20 +12,6 @@
 #include <Arduino.h>
 #include <BleGamepad.h>
 
-#define enableX false
-#define enableY false
-#define enableZ false
-#define enableRX false
-#define enableRY false
-#define enableRZ false
-#define enableSlider1 false
-#define enableSlider2 false
-#define enableRudder false
-#define enableThrottle false
-#define enableAccelerator true
-#define enableBrake true
-#define enableSteering true
-
 
 class Gamepad{
   private:
@@ -48,13 +34,30 @@ class Gamepad{
   char D_left = BUTTON_15;
   char D_right = BUTTON_16;
 
+  int16_t JoyL_X = 0;
+  int16_t JoyL_Y = 0;
+
+  int16_t JoyR_X = 0;
+  int16_t JoyR_Y = 0;
+
+  uint16_t minVal[6] = {0};
+  uint16_t topVal = 3900;
+
+  unsigned long jump_start_time = 0;
+
+
   public:
 
   // setup gamepad
-  void setup(String name);
+  void setup(String name, uint16_t output_array[6]);
 
   // update with new sensor values
   void update(uint16_t array_values[6]);
+
+  // detect jump which: L: left, R: right, B: both 
+  bool detect_jump(uint16_t left, uint16_t right, uint16_t left_min, uint16_t right_min, char which);
+
+  void toggle_button(char button);
 };
 
 #endif /* GAMEPAD_H */
