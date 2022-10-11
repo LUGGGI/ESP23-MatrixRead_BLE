@@ -11,6 +11,7 @@
 
 #include <Arduino.h>
 #include <BleGamepad.h>
+#include "MatrixRead.h"
 
 
 class Gamepad{
@@ -43,22 +44,28 @@ class Gamepad{
   int16_t JoyR_Y = 0;
 
   uint16_t minVal[6] = {0};
-  uint16_t topValM = 3900;
-  uint16_t topValR = 2800;
+  uint16_t topValM = 3600;
+  uint16_t topValR = 3300;
 
-  unsigned long jump_start_time = 0;
+  bool unpressed = false;
+  String jump = "";
+  unsigned long jump_one_delay_start = 0;
+  unsigned long jump_dead_zone_start = 0;
 
+  int jump_dead_zone = 500; //ms 
+  int left_right_dead_zone = 150;
+  int minVal_offset = 300;
 
   public:
 
   // setup gamepad
-  void setup(String name, String sensor_mode, uint16_t output_array[6]);
+  void setup(String name, String sensor_mode, MatrixRead matrix);
 
   // update with new sensor values
   void update(uint16_t array_values[6]);
 
   // detect jump which: L: left, R: right, B: both 
-  bool detect_jump(uint16_t left, uint16_t right, uint16_t left_min, uint16_t right_min, char which);
+  bool detect_jump(uint16_t left, uint16_t right, uint16_t left_min, uint16_t right_min);
 
   void toggle_button(char button);
 };

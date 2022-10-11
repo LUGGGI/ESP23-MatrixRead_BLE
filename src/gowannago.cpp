@@ -50,8 +50,6 @@ void setup() {
   SEND_FREQ = settings.send_freq;
 
   matrix.setup(settings.shutdown_time, settings.shutdown_threshold, settings.buf_len);
-  matrix.get_values();
-  output = matrix.get_output();
 
   settings.mode == "_BLE_Gamepad";
 
@@ -66,7 +64,7 @@ void setup() {
   } else {
     led.std_color = CRGB::Yellow;
     String name = String(settings.id) + "_BLE_Gamepad";
-    gamepad.setup(name, settings.sensor_mode, output.output_array);
+    gamepad.setup(name, settings.sensor_mode, matrix);
   }
   led.show(led.std_color);
   Serial.println("Controller Setup complete");

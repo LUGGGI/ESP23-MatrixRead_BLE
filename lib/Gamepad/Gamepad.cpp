@@ -1,29 +1,33 @@
 #include "Gamepad.h"
 
 
-void Gamepad::setup(String name, String sensor_mode, uint16_t output_array[6]){
+void Gamepad::setup(String name, String sensor_mode, MatrixRead matrix){
   gamepad = BleGamepad(name.c_str(), "DITF", 100);
   SensorMode = sensor_mode;
   BleGamepadConfiguration bleGamepadConfig;
-  if (SensorMode == "Mat") {
-    bleGamepadConfig.setAxesMin(0x8001); // -32767
+
+  matrix.get_values();
+  Output out = matrix.get_output();
+
+  if (SensorMode == "Ribbon" || (out.output_array[0] == 0 && out.output_array[2] == 0 && out.output_array[4] == 0)) {
+    SensorMode = "Ribbon";
+    bleGamepadConfig.setAxesMin(0x0000); // 0
     bleGamepadConfig.setAxesMax(0x7FFF); // 32767
+
   } else {
-    bleGamepadConfig.setAxesMin(0x0000); // -32767
+    bleGamepadConfig.setAxesMin(0x8001); // -32767
     bleGamepadConfig.setAxesMax(0x7FFF); // 32767
   }
 
+  Serial.print("Mode: " + SensorMode + ", ");
   Serial.print("MinVal: ");
   for(int i=0; i<6; ++i){
-    if (SensorMode == "Mat"){
-      minVal[i] = output_array[i] - 300;
-    }else {
-      minVal[i] = output_array[i] - 100;
-    }
+    minVal[i] = out.output_array[i] - minVal_offset;
     if (minVal[i] > 4096) minVal[i] = 0;
     Serial.print(String(minVal[i]) + " ");
   }
   Serial.println();
+
   
   gamepad.begin(&bleGamepadConfig);
 }
@@ -33,13 +37,18 @@ void Gamepad::update(uint16_t array_values[6]){
 
   // For Ribbon 
   if(gamepad.isConnected() && SensorMode == "Ribbon"){
-    int accel = minVal[1] - array_values[1];
-    if (accel < 0) accel = 0;
-    else if (accel > minVal[1]-topValR) accel = minVal[1]-topValR;
-    JoyR_Y = map(accel, 0, minVal[1]-topValR, 0, 32767);
+    // int accel = minVal[1] - array_values[1];
+    // if (accel < 0) accel = 0;
+    // else if (accel > minVal[1]-topValR) accel = minVal[1]-topValR;
+    // JoyR_Y = map(accel, 0, minVal[1]-topValR, 0, 32767);
+
+    int accel = array_values[1];
+    if (accel < topValR) accel = topValR;
+    else if (accel > minVal[1]) accel = minVal[1];
+    JoyR_Y = map(accel, topValR, minVal[1], 0, 32767);
 
     char print_buffer[60];
-    sprintf(print_buffer, " Acceleration:%4d, Mapped: %5d ", accel, JoyR_Y);
+    sprintf(print_buffer, " Accel:%4d, Mapped: %5d ", accel, JoyR_Y);
     Serial.print(print_buffer);
 
     gamepad.setAxes(JoyL_X, JoyL_Y, JoyR_X, 0, JoyR_Y, 0, 0, 0);
@@ -49,64 +58,76 @@ void Gamepad::update(uint16_t array_values[6]){
   if(gamepad.isConnected() && SensorMode == "Mat"){
     int left_right = array_values[0] - array_values[1];
     
+    // Fxi for integer overflow
     if (left_right < -minVal[1]) left_right = -minVal[1];
     else if (left_right > minVal[0]) left_right = minVal[0];
+    
     JoyL_X = map(left_right, -minVal[1], minVal[0], -32767, 32767);
 
+    if (abs(left_right) < left_right_dead_zone) JoyL_X = 0;
 
-    char print_buffer[60];
-    sprintf(print_buffer, " Left:%4u, Right:%4u, Direction:%4d, Mapped: %5d ", 
-      array_values[1], array_values[0], left_right, JoyL_X
-    );
-    Serial.print(print_buffer);   
     
-    
-    gamepad.setAxes(JoyL_X, JoyL_Y, JoyR_X, 0, JoyR_Y, 0, 0, 0);
-
+    detect_jump(array_values[1], array_values[0], minVal[1], minVal[0]);
     // Nitro
-    if (detect_jump(array_values[1], array_values[0], minVal[1], minVal[0], 'B')) {
+    if (jump == " -> Jump ") {
       gamepad.press(B);
       delay(5);
       gamepad.release(B);
     }
-    // Gas
-    if (detect_jump(array_values[1], array_values[0], minVal[1], minVal[0], 'L')) {
-      toggle_button(Y);
+    // Accelerate
+    if (jump == " -> Jump Left ") {
+      if (JoyR_Y == 32767) JoyR_Y = 0;
+      else JoyR_Y = 32767;
     }
-
     // Reset
-    if (detect_jump(array_values[1], array_values[0], minVal[1], minVal[0], 'R')) {
+    if (jump == " -> Jump Right ") {
       gamepad.press(LB);
       delay(5);
       gamepad.release(LB);
     }
+
+    if (millis() <= jump_dead_zone_start + jump_dead_zone) JoyL_X = 0; 
+    else if (jump_dead_zone_start != 0) jump_dead_zone_start = 0;
+
+    char print_buffer[100];
+    sprintf(print_buffer, " Left:%4u, Right:%4u, Direction:%5d, Mapped: %6d | Accel:%5d,  %s", 
+      array_values[1], array_values[0], left_right, JoyL_X, JoyR_Y, jump.c_str()
+    );
+    Serial.print(print_buffer);  
+
+    gamepad.setAxes(JoyL_X, JoyL_Y, JoyR_X, 0, JoyR_Y, 0, 0, 0);
   }
 }
 
-bool Gamepad::detect_jump(uint16_t left, uint16_t right, uint16_t left_min, uint16_t right_min, char which){
+bool Gamepad::detect_jump(uint16_t left, uint16_t right, uint16_t left_min, uint16_t right_min){
+  jump = "";
+  if (!unpressed && left < (left_min + 2*minVal_offset) && right < (right_min + 2*minVal_offset)) {
+    unpressed = true;
+    jump_dead_zone_start = millis();
+  } else if (unpressed) {
+    // check for landing on both feet
+    if (left > topValM && right > topValM){
+      jump = " -> Jump ";
+      // check for landing on left foot
+    } else if (left > topValM && right < right_min + 2*minVal_offset) {
+      if (millis() > jump_one_delay_start + 100){
+        jump = " -> Jump Left ";
+      } else if (jump_one_delay_start == 0) jump_one_delay_start = millis();
+      // check for landing on right foot
+    } else if (right > topValM && left < left_min + 2*minVal_offset) {
+      if (millis() > jump_one_delay_start + 100){
+        jump = " -> Jump Right ";
+      } else if (jump_one_delay_start == 0) jump_one_delay_start = millis();
 
-  if (left < left_min + 300 && right < right_min + 300) {
-    jump_start_time = millis();
-  } else if (jump_start_time != 0) {
-    if (which == 'B' && left > topValM && right > topValM){
-      jump_start_time = 0;
-      Serial.print(" -> Jump!!! ");
-      return true;
-    } else if (which == 'L' && left > topValM && right < right_min + 300 && millis() > jump_start_time + 100) {
-      jump_start_time = 0;
-      Serial.print(" -> Jump Left!!! ");
-      return true;
-    } else if (which == 'R' && right > topValM && left < left_min + 300 && millis() > jump_start_time + 100) {
-      jump_start_time = 0;
-      Serial.print(" -> Jump Right!!! ");
-      return true;
     }
   }
-
-  if (millis() > jump_start_time + 2000) {
-    jump_start_time = 0;
+  if (jump != "") {
+    jump_dead_zone_start = millis();
+    unpressed = false;
+    jump_one_delay_start = 0;
+    return true;
   }
-
+  if (millis() > jump_one_delay_start + 2000) jump_one_delay_start = 0;
   return false;
 }
 

@@ -53,7 +53,7 @@ Output MatrixRead::get_output(void){
   // fill output array
   for(int i=0; i<3; ++i){
     for(int j=0; j<2; ++j){
-      buffer[i][j] = lround(buffer[i][j] / BUF_LEN);
+      buffer[i][j] /= (uint32_t) BUF_LEN;
       out.output_array[i*2+j] = (uint16_t) buffer[i][j];
 
       // check if activity is detected (values leave the SHUTDOWN_THRESHOLD range)
