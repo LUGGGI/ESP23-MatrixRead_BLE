@@ -2,7 +2,6 @@
 
 
 void Gamepad::setup(String name, String sensor_mode, MatrixRead matrix){
-  gamepad = BleGamepad(name.c_str(), "DITF", 100);
   SensorMode = sensor_mode;
   BleGamepadConfiguration bleGamepadConfig;
 
@@ -11,6 +10,7 @@ void Gamepad::setup(String name, String sensor_mode, MatrixRead matrix){
 
   if (SensorMode == "Ribbon" || (out.output_array[0] == 0 && out.output_array[2] == 0 && out.output_array[4] == 0)) {
     SensorMode = "Ribbon";
+    
     bleGamepadConfig.setAxesMin(0x0000); // 0
     bleGamepadConfig.setAxesMax(0x7FFF); // 32767
 
@@ -27,8 +27,8 @@ void Gamepad::setup(String name, String sensor_mode, MatrixRead matrix){
     Serial.print(String(minVal[i]) + " ");
   }
   Serial.println();
-
-  
+  name += SensorMode;
+  gamepad = BleGamepad(name.c_str(), "DITF", 100);
   gamepad.begin(&bleGamepadConfig);
 }
 
@@ -37,11 +37,13 @@ void Gamepad::update(uint16_t array_values[6]){
 
   // For Ribbon 
   if(gamepad.isConnected() && SensorMode == "Ribbon"){
+    // acceleration
     // int accel = minVal[1] - array_values[1];
     // if (accel < 0) accel = 0;
     // else if (accel > minVal[1]-topValR) accel = minVal[1]-topValR;
     // JoyR_Y = map(accel, 0, minVal[1]-topValR, 0, 32767);
 
+    // deceleration
     int accel = array_values[1];
     if (accel < topValR) accel = topValR;
     else if (accel > minVal[1]) accel = minVal[1];
@@ -69,10 +71,9 @@ void Gamepad::update(uint16_t array_values[6]){
     
     detect_jump(array_values[1], array_values[0], minVal[1], minVal[0]);
     // Nitro
+    if (gamepad.isPressed(B)) gamepad.release(B);
     if (jump == " -> Jump ") {
       gamepad.press(B);
-      delay(5);
-      gamepad.release(B);
     }
     // Accelerate
     if (jump == " -> Jump Left ") {
@@ -80,10 +81,9 @@ void Gamepad::update(uint16_t array_values[6]){
       else JoyR_Y = 32767;
     }
     // Reset
+    if (gamepad.isPressed(LB)) gamepad.release(LB);
     if (jump == " -> Jump Right ") {
       gamepad.press(LB);
-      delay(5);
-      gamepad.release(LB);
     }
 
     if (millis() <= jump_dead_zone_start + jump_dead_zone) JoyL_X = 0; 
