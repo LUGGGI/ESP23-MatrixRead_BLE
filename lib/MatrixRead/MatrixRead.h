@@ -1,5 +1,5 @@
 /* MatrixRead.h
- * 14.07.2022 
+ * 19.10.2022 
  * 
  * Reading the values from the input-pins and returning the values
  * 
@@ -11,9 +11,9 @@
 
 #include <Arduino.h>
 
-#define A_PIN_ORANGE 33
-#define A_PIN_BROWN 34
-const int D_PINS[] = {22, 21, 25};
+const int COLS = 3;
+const int ROWS = 2;
+const int FIELDS = COLS*ROWS;
 
 // Class to output the read Variables, it saves the Values as a String, and in an array, it also saves the program run time.
 class Output{
@@ -23,7 +23,7 @@ class Output{
   // holds output with row and column an with bounds for better scaling in Arduino Serial Monitor
   String format_values;
   // holds output as an array
-  uint16_t output_array[6];
+  uint16_t output_array[FIELDS];
 
   unsigned long run_time = 0;
 };
@@ -32,23 +32,24 @@ class Output{
 class MatrixRead{
   
   private:
-  int BUF_LEN;
+  const int A_PIN_ORANGE = 33;
+  const int A_PIN_BROWN = 34;
+  const int D_PINS[3] = {22, 21, 25};
+
+  uint32_t BUF_LEN;
   int SHUTDOWN_THRESHOLD;
   int SHUTDOWN_TIME;
 
-  uint32_t buffer[3][2];
+  uint32_t buffer[COLS][ROWS];
   unsigned int last_activity_time = 0;
-  uint16_t last_activity_value[3][2];
+  uint32_t last_activity_value[COLS][ROWS];
 
   public: 
   Output out;
   bool shutdown_requested = false;
 
-  MatrixRead(){
-    buffer[3][2] = 0;
-  }
   // this will set all the pins in the right mode
-  void setup(int shutdown_time, int shutdown_threshold, int buf_len);
+  void setup(int _SHUTDOWN_TIME, int _SHUTDOWN_THRESHOLD, int _BUF_LEN);
   
   // this will read the value from the given row and column
   // the result is written into the buffer[][] array.

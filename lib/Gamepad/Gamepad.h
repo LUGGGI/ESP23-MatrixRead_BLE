@@ -1,5 +1,5 @@
 /* Gamepad.h
- * 14.07.2022
+ * 19.10.2022
  * 
  * Allows the controller to function as a ble gamepad
  * 
@@ -16,6 +16,12 @@
 
 class Gamepad{
   private:
+  const uint16_t topValM = 3600;
+  const uint16_t topValR = 3300;
+  const int jump_dead_zone = 500; //time after jump with no detection in ms 
+  const int16_t left_right_dead_zone = 150;
+  const uint16_t minVal_offset = 300;
+
   BleGamepad gamepad;
 
   String SensorMode = "Mat"; //"Ribbon"
@@ -44,22 +50,15 @@ class Gamepad{
   int16_t JoyR_Y = 0;
 
   uint16_t minVal[6] = {0};
-  uint16_t topValM = 3600;
-  uint16_t topValR = 3300;
-
   bool unpressed = false;
   String jump = "";
   unsigned long jump_one_delay_start = 0;
   unsigned long jump_dead_zone_start = 0;
 
-  int jump_dead_zone = 500; //ms 
-  int left_right_dead_zone = 150;
-  int minVal_offset = 300;
-
   public:
 
   // setup gamepad
-  void setup(String name, String sensor_mode, MatrixRead matrix);
+  void setup(String name, String SENSOR_MODE, MatrixRead matrix);
 
   // update with new sensor values
   void update(uint16_t array_values[6]);

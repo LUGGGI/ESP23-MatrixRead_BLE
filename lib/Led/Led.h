@@ -1,5 +1,5 @@
 /* Led.h
- * 14.07.2022
+ * 19.10.2022
  * 
  * Class for using the LED on the ESP32
  * 
@@ -14,10 +14,11 @@
 #include <FastLED.h>
 
 #define LED_PIN 27
-#define BLINK_FREQ 2000 // frequency for blinking of status led in ms
 
 class Led{
   private:
+  const int BLINK_FREQ = 2000; // frequency for blinking of status led in ms
+
   CRGB led[1];
   int blink_time;
   bool blink_state = false;

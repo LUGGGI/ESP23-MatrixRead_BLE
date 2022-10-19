@@ -2,6 +2,13 @@
  * 23.06.2022
  * 
  * Main file for the GoWannaGo project.
+ * This program allows the controller (m5Stack Atom) to read resistance values 
+ * from a mat or ribbon. It will filter with a moving average and send those 
+ * values over bluetooth. There are 3 modi for sending available:
+ * - Over BLE (BT low energy), all parallel measured values are sent as one
+ * - Over classic BT, values as formatted string for serial bus
+ * - Over BLE as Gamepad, controller show up as a gamepad
+ * All Values are sent as 16 bit unsigned integer.
  * 
  * Author: Lukas Beck
  * Email: Lukas.beck@ditf.de
@@ -19,7 +26,7 @@
 #define BUTTON 39
 #define POWER_PIN 19
 
-Settings settings;
+Settings set;
 
 BluetoothSerial SerialBT;
 MatrixRead matrix;
@@ -28,7 +35,6 @@ Ble ble;
 Gamepad gamepad;
 Output output;	
 
-int SEND_FREQ; // send frequency in ms
 unsigned long loop_time = 0;
 int shutdown_request_time = 0;
 
@@ -37,34 +43,27 @@ void shutdown(bool directly);
 
 void setup() {
   Serial.begin(115200);
-  // cpu frequency to 80 mHz (set to 160 or 240 if send frequency cant be met)
-  setCpuFrequencyMhz(80);
+  setCpuFrequencyMhz(80); // cpu frequency to 80 mHz (set to 160 or 240 if send frequency can't be met)
   pinMode(BUTTON, INPUT_PULLUP);
   pinMode(POWER_PIN, OUTPUT);
   digitalWrite(POWER_PIN, HIGH);  
   
   led.setup();
-  led.show(CRGB::Green);
+  set.setup();
+  matrix.setup(set.SHUTDOWN_TIME, set.SHUTDOWN_THRESHOLD, set.BUF_LEN);
 
-  settings.setup();
-  SEND_FREQ = settings.send_freq;
-
-  matrix.setup(settings.shutdown_time, settings.shutdown_threshold, settings.buf_len);
-
-  settings.mode == "_BLE_Gamepad";
-
-  if (settings.mode == "BLE_VALUES"){
+  if (set.CONTROLLER_MODE == "BLE_VALUES"){
     led.std_color = CRGB::Blue;
-    String name = String(settings.id) + "_BLE_GoWannaGo";
+    String name = String(set.ID) + "_BLE_GoWannaGo";
     ble.setup(name.c_str());
-  } else if (settings.mode == "SERIAL_BT_VALUES"){
+  } else if (set.CONTROLLER_MODE == "SERIAL_BT_VALUES"){
     led.std_color = CRGB::Purple;
-    String name = String(settings.id) + "_Serial_GoWannaGo";
+    String name = String(set.ID) + "_Serial_GoWannaGo";
     SerialBT.begin(name);
   } else {
     led.std_color = CRGB::Yellow;
-    String name = String(settings.id) + "_BLE_Gamepad";
-    gamepad.setup(name, settings.sensor_mode, matrix);
+    String name = String(set.ID) + "_BLE_Gamepad";
+    gamepad.setup(name, set.SENSOR_MODE, matrix);
   }
   led.show(led.std_color);
   Serial.println("Controller Setup complete");
@@ -87,23 +86,23 @@ void loop() {
 
   Serial.print(output.format_values);
   // Send data
-  if (settings.mode == "BLE_VALUES"){
+  if (set.CONTROLLER_MODE == "BLE_VALUES"){
     ble.sent_data_raw(output.output_array);
     ble.sent_time((uint32_t) output.run_time);
-  } else if (settings.mode == "SERIAL_BT_VALUES"){
+  } else if (set.CONTROLLER_MODE == "SERIAL_BT_VALUES"){
     SerialBT.println(output.format_values);
   } else {
     gamepad.update(output.output_array);
   }
 
   // check frequency
-  // if (millis() > (loop_time + SEND_FREQ)) {
-  //   Serial.print("Error SEND_FREQUENCY to low");
-  //   led.error();
-  // }
+  if (millis() > (loop_time + set.SEND_FREQ)) {
+    Serial.print("Error SEND_FREQUENCY to low");
+    led.error();
+  }
   led.blink();
   // wait for next send freq
-  while((millis() < (loop_time + SEND_FREQ)) && digitalRead(BUTTON)){
+  while((millis() < (loop_time + set.SEND_FREQ)) && digitalRead(BUTTON)){
     delay(1);
   }
   Serial.println();
@@ -115,35 +114,29 @@ void loop() {
 
 // controls what happens if the BUTTON is pressed
 void button_action(){
-  Serial.println("activated");
-  int button_time = millis();
-  bool blink_status = false;
+  Serial.println("Button pressed");
+  unsigned long button_time = millis();
 
   while(!digitalRead(BUTTON)){
-    // blink to indicate that in 3 seconds the controller will turn of
     led.action_blink();
 
-    if(millis() > (button_time + 3000)){
-      shutdown(true);
-      return;
-    }
-    delay(200);
+    if (millis() > (button_time + 3000)) shutdown(true);
+    else delay(200);
   }
 
   // change mode
-  if (settings.mode == "BLE_VALUES"){
-    settings.save_mode("SERIAL_BT_VALUES");
+  if (set.CONTROLLER_MODE == "BLE_VALUES"){
+    set.save_mode("SERIAL_BT_VALUES");
     led.std_color = CRGB::Purple;
-  } else if (settings.mode == "SERIAL_BT_VALUES"){
-    settings.save_mode("GAMEPAD");
+  } else if (set.CONTROLLER_MODE == "SERIAL_BT_VALUES"){
+    set.save_mode("GAMEPAD");
     led.std_color = CRGB::Yellow;
   } else {
-    settings.save_mode("BLE_VALUES");
+    set.save_mode("BLE_VALUES");
     led.std_color = CRGB::Blue;
   } 
 
   led.show(led.std_color);
-  delay(1000);
   ESP.restart();
 }
 
@@ -151,14 +144,12 @@ void button_action(){
 void shutdown(bool directly) {
   if (shutdown_request_time == 0){
     Serial.println("Shutdown Requested");
-    // SerialBT.println("Shutdown Requested");
     shutdown_request_time = millis();
   }
   led.action_blink();
 
   if ((millis() > shutdown_request_time + 10000) || directly){
     Serial.println("Controller off");
-    // SerialBT.println("Controller off");
     digitalWrite(POWER_PIN, LOW);
     led.show(CRGB::Red);
     while(true){}

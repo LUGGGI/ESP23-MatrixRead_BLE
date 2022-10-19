@@ -1,5 +1,5 @@
 /* Settings.h
- * 14.07.2022
+ * 19.10.2022
  * 
  * Enables to set an read settings
  * 
@@ -16,25 +16,18 @@ class Settings {
   private:
   Preferences preferences;
 
-  // get all settings from flash storage
-  void preference_setup();
-
   // get new value for setting, set it in flash storage and returns value
   int change_setting(String input, String unit="");
   
 
   public:
-  int id = 1; // id of the controller, displayed in name of controller
-  int send_freq = 50; // send frequency of new values in ms
-  int shutdown_time = 300; // time after the controller turns of in s
-  int shutdown_threshold = 400; // read range that has to be exceeded so that the automatic shutdown time resets
-  int buf_len = 10; // length of buffer (more increases time for reading sensor)
-  String sensor_mode = "Mat"; // sensor for game controller Mat or Ribbon
-  // holds the current Mode:
-  // BLE_VALUES: Sensor values over Bluetooth low energy
-  // SERIAL_BT_VALUES: Sensor values over Serial bus with classic bluetooth
-  // GAMEPAD: Sensor values as BLE Gamepad joystick
-  String mode = "BLE_VALUES";
+  int ID = 1; // id of the controller, displayed in name of controller
+  int SEND_FREQ = 50; // send frequency of new values in ms
+  int SHUTDOWN_TIME = 300; // time after the controller turns of in s
+  int SHUTDOWN_THRESHOLD = 400; // read range that has to be exceeded so that the automatic shutdown time resets
+  int BUF_LEN = 10; // length of buffer (more increases time for reading sensor)
+  String SENSOR_MODE = "Mat"; // sensor for game controller Mat or Ribbon
+  String CONTROLLER_MODE = "BLE_VALUES"; // holds the current Mode: BLE_VALUES, SERIAL_BT_VALUES, GAMEPAD
 
   // set up settings and waits for input
   void setup();

@@ -13,6 +13,11 @@
     "utility": "cpp",
     "list": "cpp",
     "limits": "cpp",
-    "cmath": "cpp"
+    "cmath": "cpp",
+    "string": "cpp",
+    "vector": "cpp",
+    "fstream": "cpp",
+    "sstream": "cpp",
+    "streambuf": "cpp"
   }
 }

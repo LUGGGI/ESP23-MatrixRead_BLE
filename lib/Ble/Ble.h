@@ -1,5 +1,5 @@
 /* Ble.h
- * 14.07.2022
+ * 19.10.2022
  * 
  * Class for using BT Low Energy on the ESP32
  * 
@@ -12,12 +12,15 @@
 
 #include <Arduino.h>
 
-#define SERVICE_UUID  "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define VAL_UUID      "7a7b95b1-4423-4e36-aaf4-d3698f06e38d"
-#define TIME_UUID     "0e5f194e-8bf3-4f68-8203-33f2ed28c49a"
+
 
 
 class Ble{
+  private:
+  const char* SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+  const char* VAL_UUID     = "7a7b95b1-4423-4e36-aaf4-d3698f06e38d";
+  const char* TIME_UUID    = "0e5f194e-8bf3-4f68-8203-33f2ed28c49a";
+  
   public:
 
   // Use this to setup BLE

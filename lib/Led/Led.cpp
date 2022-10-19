@@ -3,6 +3,7 @@
 void Led::setup(void){
     FastLED.addLeds<NEOPIXEL, LED_PIN>(led, 1);
     FastLED.setBrightness(10);
+    show(CRGB::Green);
 }
 
 

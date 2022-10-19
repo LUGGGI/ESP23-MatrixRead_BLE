@@ -1,7 +1,7 @@
 #include "Ble.h"
-
 #include <NimBLEDevice.h>
 
+#define SIZE(n) sizeof(n) / sizeof(n[0]) // get length of array
 
 BLEServer* pServer = NULL;
 BLECharacteristic* pVal = NULL;
@@ -50,7 +50,6 @@ void Ble::setup(String name){
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->setScanResponse(false);
-
   BLEDevice::startAdvertising();
   Serial.println("Waiting a client connection to notify...");
 }
@@ -67,8 +66,8 @@ void Ble::sent_data(String data){
 
 void Ble::sent_data_raw(uint16_t* arr){
   if (deviceConnected) {  
-    uint8_t temp[12];
-    for (int i=0; i<6; ++i){
+    uint8_t temp[SIZE(arr)*2];
+    for (int i=0; i<SIZE(arr); ++i){
       temp[i*2] = arr[i] >> 8;
       temp[i*2+1] = arr[i]; 
     }

@@ -1,8 +1,9 @@
 #include "Gamepad.h"
 
+#define SIZE(n) sizeof(n) / sizeof(n[0]) // get length of array
 
-void Gamepad::setup(String name, String sensor_mode, MatrixRead matrix){
-  SensorMode = sensor_mode;
+void Gamepad::setup(String name, String SENSOR_MODE, MatrixRead matrix){
+  SensorMode = SENSOR_MODE;
   BleGamepadConfiguration bleGamepadConfig;
 
   matrix.get_values();
@@ -11,7 +12,7 @@ void Gamepad::setup(String name, String sensor_mode, MatrixRead matrix){
   if (SensorMode == "Ribbon" || (out.output_array[0] == 0 && out.output_array[2] == 0 && out.output_array[4] == 0)) {
     SensorMode = "Ribbon";
     
-    bleGamepadConfig.setAxesMin(0x0000); // 0
+    bleGamepadConfig.setAxesMin(0x8001);//(0x0000); // 0
     bleGamepadConfig.setAxesMax(0x7FFF); // 32767
 
   } else {
@@ -21,7 +22,7 @@ void Gamepad::setup(String name, String sensor_mode, MatrixRead matrix){
 
   Serial.print("Mode: " + SensorMode + ", ");
   Serial.print("MinVal: ");
-  for(int i=0; i<6; ++i){
+  for(int i=0; i<SIZE(minVal) && SIZE(out.output_array); ++i){
     minVal[i] = out.output_array[i] - minVal_offset;
     if (minVal[i] > 4096) minVal[i] = 0;
     Serial.print(String(minVal[i]) + " ");
@@ -38,16 +39,16 @@ void Gamepad::update(uint16_t array_values[6]){
   // For Ribbon 
   if(gamepad.isConnected() && SensorMode == "Ribbon"){
     // acceleration
-    // int accel = minVal[1] - array_values[1];
+    // int16_t accel = minVal[1] - array_values[1];
     // if (accel < 0) accel = 0;
     // else if (accel > minVal[1]-topValR) accel = minVal[1]-topValR;
     // JoyR_Y = map(accel, 0, minVal[1]-topValR, 0, 32767);
 
     // deceleration
-    int accel = array_values[1];
+    int16_t accel = array_values[1];
     if (accel < topValR) accel = topValR;
     else if (accel > minVal[1]) accel = minVal[1];
-    JoyR_Y = map(accel, topValR, minVal[1], 0, 32767);
+    JoyR_Y = map(accel, topValR, minVal[1], -32767, 32767);
 
     char print_buffer[60];
     sprintf(print_buffer, " Accel:%4d, Mapped: %5d ", accel, JoyR_Y);
@@ -58,7 +59,7 @@ void Gamepad::update(uint16_t array_values[6]){
 
   // For mat
   if(gamepad.isConnected() && SensorMode == "Mat"){
-    int left_right = array_values[0] - array_values[1];
+    int16_t left_right = array_values[0] - array_values[1];
     
     // Fxi for integer overflow
     if (left_right < -minVal[1]) left_right = -minVal[1];
