@@ -1,0 +1,23 @@
+{
+  "files.associations": {
+    "*.tcc": "cpp",
+    "random": "cpp",
+    "optional": "cpp",
+    "istream": "cpp",
+    "ostream": "cpp",
+    "system_error": "cpp",
+    "array": "cpp",
+    "functional": "cpp",
+    "tuple": "cpp",
+    "type_traits": "cpp",
+    "utility": "cpp",
+    "list": "cpp",
+    "limits": "cpp",
+    "cmath": "cpp",
+    "string": "cpp",
+    "vector": "cpp",
+    "fstream": "cpp",
+    "sstream": "cpp",
+    "streambuf": "cpp"
+  }
+}
