@@ -63,7 +63,7 @@ void setup() {
   } else {
     led.std_color = CRGB::Yellow;
     String name = String(set.ID) + "_BLE_Gamepad";
-    gamepad.setup(name, set.SENSOR_MODE, matrix);
+    gamepad.setup(name, matrix);
   }
   led.show(led.std_color);
   Serial.println("Controller Setup complete");

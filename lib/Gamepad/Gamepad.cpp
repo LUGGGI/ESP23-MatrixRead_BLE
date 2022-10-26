@@ -2,8 +2,7 @@
 
 #define SIZE(n) sizeof(n) / sizeof(n[0]) // get length of array
 
-void Gamepad::setup(String name, String SENSOR_MODE, MatrixRead matrix){
-  SensorMode = SENSOR_MODE;
+void Gamepad::setup(String name, MatrixRead matrix){
   BleGamepadConfiguration bleGamepadConfig;
 
   matrix.get_values();

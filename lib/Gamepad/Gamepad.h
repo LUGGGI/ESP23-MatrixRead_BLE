@@ -58,7 +58,7 @@ class Gamepad{
   public:
 
   // setup gamepad
-  void setup(String name, String SENSOR_MODE, MatrixRead matrix);
+  void setup(String name, MatrixRead matrix);
 
   // update with new sensor values
   void update(uint16_t array_values[6]);
