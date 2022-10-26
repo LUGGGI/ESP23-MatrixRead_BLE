@@ -9,16 +9,12 @@ void Gamepad::setup(String name, String SENSOR_MODE, MatrixRead matrix){
   matrix.get_values();
   Output out = matrix.get_output();
 
-  if (SensorMode == "Ribbon" || (out.output_array[0] == 0 && out.output_array[2] == 0 && out.output_array[4] == 0)) {
+  if (out.output_array[0] == 0 && out.output_array[2] == 0 && out.output_array[4] == 0
+   || out.output_array[1] == 0 && out.output_array[3] == 0 && out.output_array[5] == 0) {
     SensorMode = "Ribbon";
-    
-    bleGamepadConfig.setAxesMin(0x8001);//(0x0000); // 0
-    bleGamepadConfig.setAxesMax(0x7FFF); // 32767
-
-  } else {
-    bleGamepadConfig.setAxesMin(0x8001); // -32767
-    bleGamepadConfig.setAxesMax(0x7FFF); // 32767
   }
+  bleGamepadConfig.setAxesMin(0x8001); // -32767
+  bleGamepadConfig.setAxesMax(0x7FFF); // 32767
 
   Serial.print("Mode: " + SensorMode + ", ");
   Serial.print("MinVal: ");
