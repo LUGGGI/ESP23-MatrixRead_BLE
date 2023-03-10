@@ -16,8 +16,11 @@
 
 class Gamepad{
   private:
-  const uint16_t topValM = 3600;
-  const uint16_t topValR = 3300;
+// switching threshold mat
+  const uint16_t topValM = 3100;//old val: 3600
+// switching threshold ribbon
+  const uint16_t topValR = 3530;//old val: 3300
+
   const int jump_dead_zone = 500; //time after jump with no detection in ms 
   const int16_t left_right_dead_zone = 150;
   const uint16_t minVal_offset = 300;
