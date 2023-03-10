@@ -11,9 +11,12 @@ void Settings::setup() {
   SHUTDOWN_THRESHOLD = preferences.getInt("SHUTDOWN_THRESHOLD", SHUTDOWN_THRESHOLD);
   BUF_LEN = preferences.getInt("BUF_LEN", BUF_LEN);
   CONTROLLER_MODE = preferences.getString("mode", CONTROLLER_MODE);
+  
 
   print_settings();
   Serial.println("To change controller settings send anything.");
+
+
   unsigned long time = millis();
   bool set_settings = false;
 
@@ -48,7 +51,7 @@ void Settings::setup() {
     } else if (input.startsWith("BUF_LEN")){
       BUF_LEN = change_setting(input);
 
-    } else if (input.equals("EXIT")) {
+    } else if (input.startsWith("EXIT")) {
       Serial.println("Exiting Settings...");
       set_settings = false;
 
