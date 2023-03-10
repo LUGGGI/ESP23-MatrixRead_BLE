@@ -25,6 +25,12 @@
 
 #define BUTTON 39
 #define POWER_PIN 19
+//das wäre schön Version: https://community.platformio.org/t/how-to-build-got-revision-into-binary-for-version-output/15380/5
+// oder hier: https://community.platformio.org/t/platformio-version-increment/13945/3
+#define VERSION "Version 1.0 (platformio)"
+#define PRINTPROJINFO() 	Serial.println(F("compiled: " __DATE__ " " __TIME__ ":\r\n" __FILE__ ));
+#define PRINTIDEINFO() 		Serial.print(F("IDE: "));  Serial.println((ARDUINO));
+
 
 Settings set;
 
@@ -67,6 +73,7 @@ void setup() {
   }
   led.show(led.std_color);
   Serial.println("Controller Setup complete");
+  
 }
 
 
@@ -112,8 +119,25 @@ void loop() {
 ///////////////////////////////////////////////////////////////////////
 // Methods
 
+//print long line of chars
+void SerialprintChar(const char a,uint16_t n)
+{
+  for(int i=0;i<n;i++)
+  {
+     Serial.print(a);
+  }
+  Serial.println();   
+}
+
 // controls what happens if the BUTTON is pressed
 void button_action(){
+  Serial.println();Serial.println();
+  SerialprintChar('#',80);
+  Serial.println(VERSION);
+  PRINTPROJINFO();
+  PRINTIDEINFO();
+  SerialprintChar('#',80);
+  Serial.println();
   Serial.println("Button pressed");
   unsigned long button_time = millis();
 
