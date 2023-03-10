@@ -46,7 +46,7 @@ void Gamepad::update(uint16_t array_values[6]){
     JoyR_Y = map(accel, topValR, minVal[1], -32767, 32767);
 
     char print_buffer[60];
-    sprintf(print_buffer, " Accel:%4d, Mapped: %5d ", accel, JoyR_Y);
+    sprintf(print_buffer, " Accel:%4d, Mapped:%5d ", accel, JoyR_Y);
     Serial.print(print_buffer);
 
     gamepad.setAxes(JoyL_X, JoyL_Y, JoyR_X, 0, JoyR_Y, 0, 0, 0);
@@ -86,7 +86,7 @@ void Gamepad::update(uint16_t array_values[6]){
     else if (jump_dead_zone_start != 0) jump_dead_zone_start = 0;
 
     char print_buffer[100];
-    sprintf(print_buffer, " Left:%4u, Right:%4u, Direction:%5d, Mapped: %6d | Accel:%5d,  %s", 
+    sprintf(print_buffer, " Left:%4u, Right:%4u, Direction:%5d, Mapped:%6d | Accel:%5d,  %s", 
       array_values[1], array_values[0], left_right, JoyL_X, JoyR_Y, jump.c_str()
     );
     Serial.print(print_buffer);  
