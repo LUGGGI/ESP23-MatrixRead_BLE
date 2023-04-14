@@ -44,6 +44,7 @@ Output output;
 unsigned long loop_time = 0;
 int shutdown_request_time = 0;
 
+void print_compile_info();
 void button_action();
 void shutdown(bool directly);
 
@@ -58,7 +59,7 @@ void setup() {
   
   led.setup();
   set.setup();
-  matrix.setup(set.SHUTDOWN_TIME, set.SHUTDOWN_THRESHOLD, set.BUF_LEN);
+  matrix.setup(set.OFF_TIME, set.OFF_THRESHOLD, set.BUF_LEN);
   if (set.CONTROLLER_MODE == "BLE_VALUES"){
     led.std_color = CRGB::Blue;
     String name = String(set.ID) + "_BLE_GoWannaGo";
