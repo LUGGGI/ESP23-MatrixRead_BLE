@@ -53,12 +53,12 @@ void setup() {
   pinMode(BUTTON, INPUT_PULLUP);
   pinMode(POWER_PIN, OUTPUT);
   digitalWrite(POWER_PIN, HIGH);  
+
+  print_compile_info();
   
   led.setup();
   set.setup();
   matrix.setup(set.SHUTDOWN_TIME, set.SHUTDOWN_THRESHOLD, set.BUF_LEN);
-  gamepad.setTopValM(set.TOPVAL_MAT);
-  gamepad.setTopValR(set.TOPVAL_RIBBON);
   if (set.CONTROLLER_MODE == "BLE_VALUES"){
     led.std_color = CRGB::Blue;
     String name = String(set.ID) + "_BLE_GoWannaGo";
@@ -70,7 +70,7 @@ void setup() {
   } else {
     led.std_color = CRGB::Yellow;
     String name = String(set.ID) + "_BLE_Gamepad";
-    gamepad.setup(name, matrix);
+    gamepad.setup(name, matrix, set.TOPVAL_MAT, set.TOPVAL_RIBBON);
   }
   led.show(led.std_color);
   Serial.println("Controller Setup complete");
@@ -121,24 +121,23 @@ void loop() {
 // Methods
 
 //print long line of chars
-void SerialprintChar(const char a,uint16_t n)
-{
-  for(int i=0;i<n;i++)
-  {
-     Serial.print(a);
+void print_compile_info() {
+  Serial.println();Serial.println();
+  for(int i=0;i<80;i++) {
+     Serial.print('#');
+  }
+  Serial.println(); 
+  Serial.println(VERSION);
+  PRINTPROJINFO();
+  PRINTIDEINFO();
+  for(int i=0;i<80;i++) {
+     Serial.print('#');
   }
   Serial.println();   
 }
 
 // controls what happens if the BUTTON is pressed
 void button_action(){
-  Serial.println();Serial.println();
-  SerialprintChar('#',80);
-  Serial.println(VERSION);
-  PRINTPROJINFO();
-  PRINTIDEINFO();
-  SerialprintChar('#',80);
-  Serial.println();
   Serial.println("Button pressed");
   unsigned long button_time = millis();
 
