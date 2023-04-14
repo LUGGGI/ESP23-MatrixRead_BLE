@@ -11,7 +11,9 @@ void Settings::setup() {
   SHUTDOWN_THRESHOLD = preferences.getInt("SHUTDOWN_THRESHOLD", SHUTDOWN_THRESHOLD);
   BUF_LEN = preferences.getInt("BUF_LEN", BUF_LEN);
   CONTROLLER_MODE = preferences.getString("mode", CONTROLLER_MODE);
-  
+  TOPVAL_MAT =  preferences.getInt("TOPVAL_MAT", TOPVAL_MAT);
+  TOPVAL_RIBBON =  preferences.getInt("TOPVAL_RIBBON", TOPVAL_RIBBON);
+
 
   print_settings();
   Serial.println("To change controller settings send anything.");
@@ -51,6 +53,12 @@ void Settings::setup() {
     } else if (input.startsWith("BUF_LEN")){
       BUF_LEN = change_setting(input);
 
+    } else if (input.startsWith("TOPVAL_MAT")){
+      TOPVAL_MAT = change_setting(input);
+
+    } else if (input.startsWith("TOPVAL_RIBBON")){
+      TOPVAL_RIBBON = change_setting(input);
+
     } else if (input.startsWith("EXIT")) {
       Serial.println("Exiting Settings...");
       set_settings = false;
@@ -88,7 +96,9 @@ void Settings::print_settings(){
     "\n SEND_FREQ:          " + String(SEND_FREQ) + 
     "\n SHUTDOWN_TIME:      " + String(SHUTDOWN_TIME) + 
     "\n SHUTDOWN_THRESHOLD: " + String(SHUTDOWN_THRESHOLD) +
-    "\n BUF_LEN:            " + String(BUF_LEN)
+    "\n BUF_LEN:            " + String(BUF_LEN) +
+    "\n TOPVAL_MAT:         " + String(TOPVAL_MAT) +
+    "\n TOPVAL_RIBBON:      " + String(TOPVAL_RIBBON)
   );
 }
 

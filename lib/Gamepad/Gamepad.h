@@ -17,10 +17,9 @@
 class Gamepad{
   private:
 // switching threshold mat
-  const uint16_t topValM = 3100;//old val: 3600
+  uint16_t topValM = 3100;// old val: 3600
 // switching threshold ribbon
-  const uint16_t topValR = 3530;//old val: 3300
-
+  uint16_t topValR =3300;
   const int jump_dead_zone = 500; //time after jump with no detection in ms 
   const int16_t left_right_dead_zone = 150;
   const uint16_t minVal_offset = 300;
@@ -59,7 +58,14 @@ class Gamepad{
   unsigned long jump_dead_zone_start = 0;
 
   public:
-
+  void setTopValM (uint16_t in){
+    //if(in < 4096) //todo: Wertebereich prüfen
+    topValM = in;
+  }
+  void setTopValR (uint16_t in){
+    //if(in < 4096) //todo: Wertebereich prüfen
+    topValR = in;
+  }
   // setup gamepad
   void setup(String name, MatrixRead matrix);
 

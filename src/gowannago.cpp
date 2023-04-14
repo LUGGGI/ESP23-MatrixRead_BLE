@@ -27,7 +27,7 @@
 #define POWER_PIN 19
 //das wäre schön Version: https://community.platformio.org/t/how-to-build-got-revision-into-binary-for-version-output/15380/5
 // oder hier: https://community.platformio.org/t/platformio-version-increment/13945/3
-#define VERSION "Version 1.0 (platformio)"
+#define VERSION "Version 1.1a"
 #define PRINTPROJINFO() 	Serial.println(F("compiled: " __DATE__ " " __TIME__ ":\r\n" __FILE__ ));
 #define PRINTIDEINFO() 		Serial.print(F("IDE: "));  Serial.println((ARDUINO));
 
@@ -57,7 +57,8 @@ void setup() {
   led.setup();
   set.setup();
   matrix.setup(set.SHUTDOWN_TIME, set.SHUTDOWN_THRESHOLD, set.BUF_LEN);
-
+  gamepad.setTopValM(set.TOPVAL_MAT);
+  gamepad.setTopValR(set.TOPVAL_RIBBON);
   if (set.CONTROLLER_MODE == "BLE_VALUES"){
     led.std_color = CRGB::Blue;
     String name = String(set.ID) + "_BLE_GoWannaGo";

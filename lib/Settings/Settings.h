@@ -26,7 +26,8 @@ class Settings {
   int SHUTDOWN_TIME = 300; // time after the controller turns of in s
   int SHUTDOWN_THRESHOLD = 400; // read range that has to be exceeded so that the automatic shutdown time resets
   int BUF_LEN = 10; // length of buffer (more increases time for reading sensor)
- 
+  int TOPVAL_MAT = 3100;
+  int TOPVAL_RIBBON = 3290;
   String CONTROLLER_MODE = "BLE_VALUES"; // holds the current Mode: BLE_VALUES, SERIAL_BT_VALUES, GAMEPAD
 
   // set up settings and waits for input
