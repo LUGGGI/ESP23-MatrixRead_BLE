@@ -16,13 +16,12 @@
 
 class Gamepad{
   private:
-// switching threshold mat
-  uint16_t topValM;
-// switching threshold ribbon
-  uint16_t topValR;
-  const int jump_dead_zone = 500; //time after jump with no detection in ms 
+  uint16_t topValM; // max value for mat
+  uint16_t topValR; // switching threshold ribbon
+  const int jump_time_dead_zone = 500; // time in ms after jump with no detection
+  const int jump_topVal_offset = 500;
   const int16_t left_right_dead_zone = 150;
-  const uint16_t minVal_offset = 300;
+  const uint16_t min_value_margin = 300; // value added/subtracted from min_value to have better margin
 
   BleGamepad gamepad;
 
@@ -51,7 +50,9 @@ class Gamepad{
   int16_t JoyR_X = 0;
   int16_t JoyR_Y = 0;
 
-  uint16_t minVal[6] = {0};
+  uint16_t min_value[6] = {0}; // sensor value without pressing (baseline)
+  int16_t right_max = 0; // max value for the right pad
+  int16_t left_max = 0; // max value for the left pad
   bool unpressed = false;
   String jump = "";
   unsigned long jump_one_delay_start = 0;
