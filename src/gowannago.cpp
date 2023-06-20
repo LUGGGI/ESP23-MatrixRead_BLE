@@ -59,10 +59,10 @@ void setup() {
 
   print_compile_info();
   
-  led_game.setup();
   led.setup();
   set.setup();
   matrix.setup(set.OFF_TIME, set.OFF_THRESHOLD, set.BUF_LEN);
+  led_game.setup(matrix, set.TOPVAL_MAT);
   if (set.CONTROLLER_MODE == "BLE_VALUES"){
     led.std_color = CRGB::Blue;
     String name = String(set.ID) + "_BLE_GoWannaGo";
@@ -78,7 +78,7 @@ void setup() {
   }
   led.show(led.std_color);
   Serial.println("Controller Setup complete");
-  set.SEND_FREQ = 500;
+  set.SEND_FREQ = 100;
   
 }
 
@@ -97,7 +97,7 @@ void loop() {
   matrix.get_values();
   output = matrix.get_output();
 
-  led_game.update();
+  led_game.update(output.output_array);
 
   // Serial.print(output.format_values);
   // Send data
