@@ -21,13 +21,14 @@
 #include "Led.h"
 #include "Ble.h"
 #include "Gamepad.h"
+#include "LedGame.h"
 
 
 #define BUTTON 39
 #define POWER_PIN 19
 //das wäre schön Version: https://community.platformio.org/t/how-to-build-got-revision-into-binary-for-version-output/15380/5
 // oder hier: https://community.platformio.org/t/platformio-version-increment/13945/3
-#define VERSION "Version 1.1a"
+#define VERSION "Version 2"
 #define PRINTPROJINFO() 	Serial.println(F("compiled: " __DATE__ " " __TIME__ ":\r\n" __FILE__ ));
 #define PRINTIDEINFO() 		Serial.print(F("IDE: "));  Serial.println((ARDUINO));
 
@@ -39,6 +40,7 @@ MatrixRead matrix;
 Led led;
 Ble ble;
 Gamepad gamepad;
+LedGame led_game;
 Output output;	
 
 unsigned long loop_time = 0;
@@ -57,6 +59,7 @@ void setup() {
 
   print_compile_info();
   
+  led_game.setup();
   led.setup();
   set.setup();
   matrix.setup(set.OFF_TIME, set.OFF_THRESHOLD, set.BUF_LEN);
@@ -75,6 +78,7 @@ void setup() {
   }
   led.show(led.std_color);
   Serial.println("Controller Setup complete");
+  set.SEND_FREQ = 500;
   
 }
 
@@ -93,16 +97,18 @@ void loop() {
   matrix.get_values();
   output = matrix.get_output();
 
-  Serial.print(output.format_values);
+  led_game.update();
+
+  // Serial.print(output.format_values);
   // Send data
-  if (set.CONTROLLER_MODE == "BLE_VALUES"){
-    ble.sent_data_raw(output.output_array);
-    ble.sent_time((uint32_t) output.run_time);
-  } else if (set.CONTROLLER_MODE == "SERIAL_BT_VALUES"){
-    SerialBT.println(output.format_values);
-  } else {
-    gamepad.update(output.output_array);
-  }
+  // if (set.CONTROLLER_MODE == "BLE_VALUES"){
+  //   ble.sent_data_raw(output.output_array);
+  //   ble.sent_time((uint32_t) output.run_time);
+  // } else if (set.CONTROLLER_MODE == "SERIAL_BT_VALUES"){
+  //   SerialBT.println(output.format_values);
+  // } else {
+  //   gamepad.update(output.output_array);
+  // }
 
   // check frequency
   if (millis() > (loop_time + set.SEND_FREQ)) {
