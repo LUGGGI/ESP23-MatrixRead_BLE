@@ -30,24 +30,30 @@ void LedGame::update(uint16_t array_values[6]) {
 
   int16_t ratio_left_right = right - left;
 
+  // account for overflow
   if (ratio_left_right < -topVal) {
     ratio_left_right = -topVal;
   } else if  (ratio_left_right > topVal) {
     ratio_left_right = topVal;
   }
+  // get position in game field
   player_position = map(ratio_left_right, -topVal, topVal, 0, GAME_FIELD_SIZE-PLAYER_SIZE);
 
-
+  // if over target start timer
   if (target_time == 0 && (player_position < target && player_position+PLAYER_SIZE > target)) {
     target_color = '*';
     target_time = millis();
   }
+
+  // if timer > TARGET_TIME and player still over target -> WIN
   else if (millis() > TARGET_TIME+target_time && (player_position < target && player_position+PLAYER_SIZE > target)) {
     Serial.println("\n WIN \n");
     delay(1000);
     target_time = 0;
     target = random(PLAYER_SIZE + 5, GAME_FIELD_SIZE-PLAYER_SIZE-5);
   } 
+
+  // if player not over target reset timer
   else if (target < player_position || target > player_position+PLAYER_SIZE) {
     target_time = 0;
   }
