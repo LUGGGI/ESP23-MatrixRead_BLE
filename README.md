@@ -43,30 +43,3 @@ Verlagerung links/rechts => Axis 0 (-0,6..0,6)
 **Controllerconfig**:
 "SuperTuxKartPortable\\Data\\supertuxkart\\config-0.10\\input.xml"
 
-aus Mail von Lukas
-
-Von: Lukas Beck \<lukas.beck@ditf.de> 
-Gesendet: Freitag, 17. Februar 2023 11:59
-An: Valérie Bartsch \<Valerie.Bartsch@ditf.de>; Lena Pfeiffer \<lena.pfeiffer@ditf.de>; Sven Kuijpens \<sven.kuijpens@ditf.de>
-Cc: Michael Haupt \<Michael.Haupt@ditf.de>; Raphael Wolfer \<Raphael.Wolfer@ditf.de>
-Betreff: Re: Go wannago Demonstrator - Anwender Forum
-
-Hallo,
-
-Das Band ist auch bei der derzeitigen Software nicht nötig. Man kann halt dann nicht Bremsen/ Rückwärts fahren, aber es geht auch ohne.
-
-Hier nochmal ne kurze Zusammenfassung der Steuerung.
-Man kann durch springen/ erstmaliges auf die Matte treten 3 verschiedene Befehle auslösen. Zu Ausführung dieser Befehle müssen beide Felder unbelastet sein, hierbei reicht auch Springen. Die Befehle werden durch das Landen / treten auf bestimmten Felder bzw. Kombinationen ausgelöst. Die Befehle sind
-Linkes Feld    Gas geben, bzw Starten. Erneute Aktivierung stoppt das Auto. 
-Rechtes Feld    Zurücksetzten des Fahrzeugs
-Beide Felder    Nitro (extra Geschwindigkeit) für eine Sekunde
-Hierbei empfehle ich vor Start eines Rennes vor der Matte zu stehen und dann bei start kurz auf das linke Feld zu treten bevor man beide zum Lenken benutzt.
-
-Wichtig ist auch das bei anschalten der Controller die Matten angeschlossen und unbelastet sind da die da kalibriert werden. Dh. sollte die Steuerung abweichen einfach den Kontroller aus und einschalten.
-
-Ich denke das @Patrick auch noch genug Kontroller für 3 Matten hat (wenn man die Bänder nicht mitbenutzt. Sonst liegen in der Werkstatt noch ein paar die aber noch nicht das aktuelle Program haben. In dem fall einfach nochmal Bescheid geben dann kann man das da auch aufspielen.
-
-Gruß
-
-Lukas
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
